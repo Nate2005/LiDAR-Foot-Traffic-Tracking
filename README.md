@@ -1,1 +1,1 @@
-# LiDAR-Foot-Traffic-Tracking
+# LiDAR Foot Traffic Tracking
