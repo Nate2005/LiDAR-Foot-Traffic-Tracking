@@ -3,7 +3,6 @@
 ## Course Information
 
 | | |
-|---|---|
 | **College** | University of Nevada; Reno |
 | **Course** | Computer Science and Engineering Capstone |
 | **Term** | Fall 2026 - Spring 2027 |
