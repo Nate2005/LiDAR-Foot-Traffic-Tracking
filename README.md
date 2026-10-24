@@ -7,7 +7,7 @@
 | **College** | University of Nevada; Reno |
 | **Course** | Computer Science and Engineering Capstone |
 | **Term** | Fall 2026 to Spring 2027 |
-| **Instructor(s)** | Ering Keith, Zach Estreito |
+| **Instructor(s)** | Erin Keith, Zach Estreito |
 | **Advisor** | TBD |
 
 ## Authors
