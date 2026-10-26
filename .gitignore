@@ -218,3 +218,10 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+
+#raw map files
+.osm.pbf
+.pmtiles
+.mbtiles
+
