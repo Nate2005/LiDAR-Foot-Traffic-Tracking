@@ -74,7 +74,7 @@ The scripts expect a file matching:
 
 - nevada-*.osm.pbf
 
-put into scripts folder
+Put into Out folder
 
 ### Font Assets
 
