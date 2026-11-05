@@ -195,7 +195,7 @@ def main():
 
     if not CheckPackages():
         print(
-            "\nPlease run InstallDeps.py with sudo/root privileges "
+            "\nPlease install depenencies from the readme with sudo/root privileges "
             "and then rerun this script.\n"
         )
         return
