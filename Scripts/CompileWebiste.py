@@ -8,7 +8,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_DIR = SCRIPT_DIR.parent / "unrwalkingmapWebsite"
 
 DIST_DIR = PROJECT_DIR / "dist"
-NGINX_ROOT = Path("/var/www/html")
+NGINX_ROOT = Path("/var/www/capstone")
 
 
 def run(cmd, cwd=None):
