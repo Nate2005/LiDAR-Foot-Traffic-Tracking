@@ -6,9 +6,15 @@ import { onMounted } from 'vue'
 import rawStyle from '../styles/style-unr'
 
 import { createMap } from '../services/map'
+import type { RouteRequest } from '../types/route'
 
-import SearchBar from '../components/SearchBar.vue'
+import SearchPanel from '../components/SearchPanel.vue'
 
+
+// Placeholder until ApiController.getRoute and MapView.drawRoutes exist.
+function onRoute(request: RouteRequest) {
+  console.log('Route requested', request)
+}
 
 onMounted(async () => {
   const style = structuredClone(rawStyle)
@@ -27,7 +33,7 @@ onMounted(async () => {
 <template>
   <div class="map-container">
 
-    <SearchBar />
+    <SearchPanel @route="onRoute" />
     <div id="map"></div>
 
     <div class="attribution">
