@@ -5,7 +5,7 @@ import sys
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 WORKING_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, '..', '..'))
-SCHEMA_PATH = os.path.join(SCRIPT_DIR, 'campus_traffic_schema.sql')
+SCHEMA_PATH = os.path.join(WORKING_DIR, 'src', 'database', 'campus_traffic_schema.sql')
 DATA_DIR = os.path.join(WORKING_DIR, 'data')
 DB_PATH = os.path.join(DATA_DIR, 'campus_traffic.db')
 
@@ -17,7 +17,7 @@ def setup_database():
     if os.path.exists(DB_PATH):
         print(  f"Error: Database already exists at {DB_PATH}. " \
                 "If you want to create a new database, run the " \
-                "archive script at archive/archive_db.sh first."
+                "archive script at scripts/database/archive_db.sh first."
         )
         sys.exit(1)
 

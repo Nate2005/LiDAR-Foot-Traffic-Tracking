@@ -2,7 +2,7 @@
 
 # Define paths relative to this script
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)"
-WORKING_DIR="$(dirname "$SCRIPT_DIR")"
+WORKING_DIR="$(dirname "$(dirname "$SCRIPT_DIR")")"
 DATA_DIR="$WORKING_DIR/data"
 ARCHIVE_DIR="$WORKING_DIR/archive"
 DB_PATH="$DATA_DIR/campus_traffic.db"

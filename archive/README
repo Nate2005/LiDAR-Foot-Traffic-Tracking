@@ -1,3 +1,3 @@
 # Archive Directory
 
-This directory stores historical backups of the SQLite database. Files are automatically moved here when running the archive_db.sh script located in the scripts/ directory.
+This directory stores historical backups of the SQLite database. Files are automatically moved here when running the archive_db.sh script located in the scripts/database/ directory.

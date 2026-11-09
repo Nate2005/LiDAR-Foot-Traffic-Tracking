@@ -2,4 +2,4 @@
 
 This directory is the storage location for the active SQLite database (campus_traffic.db) used by the LiDAR foot traffic tracking backend.
 
-To generate a fresh database from the schema, run the create_db.py script located in src/database/.
+To generate a fresh database from the schema, run the create_db.py script located in scripts/database/. To add labeled test rows, run scripts/database/seed_db.py afterwards.
