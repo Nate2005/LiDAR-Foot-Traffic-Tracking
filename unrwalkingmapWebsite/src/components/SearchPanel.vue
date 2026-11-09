@@ -30,13 +30,16 @@
         {{ building.name }}
       </li>
     </ul>
+
+    <RouteFilterBar v-model:mode="mode" v-model:ada="ada" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
+import RouteFilterBar from './RouteFilterBar.vue'
 import { buildings } from '../data/buildings'
-import type { Building, RouteRequest } from '../types/route'
+import type { Building, RouteRequest, TravelMode } from '../types/route'
 
 const STORAGE_KEY = 'recentSearches'
 const MAX_RECENT = 5
@@ -47,6 +50,8 @@ const fromLabel = ref('')
 const toText = ref('')
 const selected = ref<Building | null>(null)
 const open = ref(false)
+const mode = ref<TravelMode>('walking')
+const ada = ref(false)
 const recentSearches = ref<Building[]>([])
 
 const suggestions = computed<Building[]>(() => {
@@ -103,8 +108,13 @@ function submitRoute() {
   emit('route', {
     fromId: null,
     toId: selected.value.id,
+    mode: mode.value,
+    ada: ada.value,
   })
 }
+
+// Re-route when a filter changes after a destination was chosen.
+watch([mode, ada], submitRoute)
 
 onMounted(() => {
   prefillCurrentLocation()
