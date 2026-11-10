@@ -1,1 +1,29 @@
-<h1>Hello from my Pi</h1>
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Prototype</title>
+    </head>
+
+    <body>
+        <h1>Sensor Readings</h1>
+        <button id="refresh" onclick="refresh();">Refresh</button>
+        <span id="status"></span>
+
+        <table id="data">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Sensor</th>
+                    <th>Value</th>
+                    <th>Time</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <script src="./script.js"></script>
+    </body>
+</html>
