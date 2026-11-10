@@ -1,8 +1,22 @@
 import sqlite3
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
+from fastapi.responses import FileResponse
 
-app = FastAPI(root_path="/api")
+app = FastAPI()
 
-@app.get("/hello")
-def hello():
-	return {"message": "Hello from FastAPI on the Pi"}
+DB_PATH = '/data/app.db'
+
+def getdb():
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    try:
+        yield conn
+    finally:
+        conn.close()
+
+@app.get('/readings')
+def readings(db: sqlite3.Connection = Depends(getdb)):
+    rows = db.execute(
+        "SELECT id, sensor, value, time FROM readings ORDER BY id DESC"
+	).fetchall()
+    return [dict(r) for r in rows]
