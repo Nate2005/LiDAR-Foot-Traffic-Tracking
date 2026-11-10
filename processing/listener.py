@@ -1,31 +1,33 @@
+import hmac
 import os
 import sqlite3
-import paho.mqtt.client as mqtt
+from fastapi import FastAPI, Depends, Header, HTTPException
+from pydantic import BaseModel, Field
 
-DB_PATH = "/data/app.db"
-MQTT_USER = "processor"
-MQTT_PASS = os.environ["MQTT_PASS"]
+app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 
-def on_connect(client, userdata, flags, reason_code, properties):
-    print("Connected:", reason_code)
-    client.subscribe("esp32/#")   # re-subscribes automatically after reconnects
+DB_PATH = '/data/app.db'
+INGEST_KEY = os.environ.get('INGEST_KEY', '')
 
-def on_message(client, userdata, msg):
-    try:
-        value = float(msg.payload.decode())
-    except ValueError:
-        print("Ignoring non-numeric payload on", msg.topic)
-        return
-    sensor = msg.topic.split("/", 1)[1]
+def getdb():
     conn = sqlite3.connect(DB_PATH)
-    conn.execute("PRAGMA busy_timeout=5000;")
-    conn.execute("INSERT INTO readings (sensor, value) VALUES (?, ?)", (sensor, value))
-    conn.commit()
-    conn.close()
+    try:
+        yield conn
+    finally:
+        conn.close()
 
-client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
-client.username_pw_set(MQTT_USER, MQTT_PASS)
-client.on_connect = on_connect
-client.on_message = on_message
-client.connect("127.0.0.1", 1883)
-client.loop_forever()
+class Reading(BaseModel):
+    sensor: str
+    value: float
+
+@app.post('/', status_code=201)
+def ingest(reading: Reading, api_key: str = Header(default=''), db: sqlite3.Connection = Depends(getdb)):
+    if not INGEST_KEY or not hmac.compare_digest(api_key.encode(), INGEST_KEY.encode()):
+        raise HTTPException(status_code=401, detail='Invalid API Key')
+
+    db.execute(
+        'INSERT INTO readings (sensor, value) VALUES (?, ?)',
+        (reading.sensor, reading.value)
+    )
+    db.commit()
+    return {"ok": True}
