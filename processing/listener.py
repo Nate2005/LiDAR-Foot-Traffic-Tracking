@@ -2,12 +2,12 @@ import hmac
 import os
 import sqlite3
 from fastapi import FastAPI, Depends, Header, HTTPException
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 
 DB_PATH = '/data/app.db'
-INGEST_KEY = os.environ.get('INGEST_KEY', '')
+INGEST_KEY = os.environ.get('INGEST_KEY')
 
 def getdb():
     conn = sqlite3.connect(DB_PATH)
