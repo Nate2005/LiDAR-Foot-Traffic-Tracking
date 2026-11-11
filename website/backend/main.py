@@ -6,6 +6,7 @@ app = FastAPI()
 
 DB_PATH = '/data/app.db'
 
+# Opens connection to SQLite database.
 def getdb():
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
@@ -14,6 +15,7 @@ def getdb():
     finally:
         conn.close()
 
+# Listens for request sent by button press. Queries database for all rows, returns them as a dictionary.
 @app.get('/readings')
 def readings(db: sqlite3.Connection = Depends(getdb)):
     rows = db.execute(

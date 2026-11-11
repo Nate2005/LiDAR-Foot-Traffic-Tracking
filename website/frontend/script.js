@@ -7,10 +7,12 @@ async function refresh() {
     buttonStatus.textContent = "Loading...";
 
     try {
+        // Send request to FastAPI endpoint, format data as json.
         const response = await fetch("api/readings", { cache: "no-store"});
         if (!response.ok) throw new Error("HTTP " + response.status);
         const rows = await response.json();
 
+        // Read out json, making new row for each reading.
         tbody.innerHTML = "";
         for (const r of rows) {
             const tableRow = document.createElement("tr");

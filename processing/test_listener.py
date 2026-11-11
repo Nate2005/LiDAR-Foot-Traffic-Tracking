@@ -6,6 +6,7 @@ import listener
 
 TEST_KEY = "test-secret"
 
+# Creates database in memory, so it doesn't touch production db.
 @pytest.fixture
 def db():
     conn = sqlite3.connect(':memory:', check_same_thread=False)
@@ -23,6 +24,7 @@ def db():
     yield conn
     conn.close()
 
+# Opens connection to FastAPI endpoint through TestClient. Replaces the TEST_KEY with actual API key. Replaces getdb with above db function.
 @pytest.fixture
 def client(db, monkeypatch):
     monkeypatch.setattr(listener, 'INGEST_KEY', TEST_KEY)
