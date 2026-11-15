@@ -14,7 +14,8 @@ CREATE TABLE WalkwaySegment (
     walkway_id SERIAL UNIQUE,
     boundary GEOMETRY,
     allow_riders BOOLEAN,
-    allow_vehicles BOOLEAN
+    allow_vehicles BOOLEAN,
+    ada_accessible BOOLEAN NOT NULL DEFAULT FALSE CHECK (ada_accessible IN (0, 1))
 );
 
 CREATE TABLE Intersection (

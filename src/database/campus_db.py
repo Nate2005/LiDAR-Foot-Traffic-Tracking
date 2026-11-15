@@ -14,7 +14,8 @@ TABLES = {
     'Building': Table('building_name', 'building_id',
                       ('building_name', 'name', 'outline')),
     'WalkwaySegment': Table('walkway_name', 'walkway_id',
-                            ('walkway_name', 'boundary', 'allow_riders', 'allow_vehicles')),
+                            ('walkway_name', 'boundary', 'allow_riders', 'allow_vehicles',
+                             'ada_accessible')),
     'Intersection': Table('intersection_name', 'intersection_id',
                           ('intersection_name', 'name', 'boundary')),
     'SensorNode': Table('sensor_name', 'sensor_id',
@@ -281,6 +282,32 @@ class CampusDB:
             (intersection_id,),
         )
         return [dict(row) for row in rows]
+
+    def walkway_edges(self, ada_only=False):
+        """Return walkway segments with their linked intersection IDs, for building
+        the routing graph (intersections are nodes, walkways are edges).
+
+        Each dict is a WalkwaySegment row plus 'intersection_ids', a sorted list.
+        A walkway with no linked intersections has an empty list.
+
+        Args:
+            ada_only: If True, leave out segments that are not ADA accessible
+                (stairs or other non-ADA-compliant features).
+        """
+        where = "WHERE w.ada_accessible = 1" if ada_only else ""
+        rows = self.conn.execute(
+            "SELECT w.*, wi.intersection_id AS linked_intersection FROM WalkwaySegment w "
+            "LEFT JOIN Walkway_Intersection wi ON wi.walkway_id = w.walkway_id "
+            f"{where} ORDER BY w.walkway_id, wi.intersection_id"
+        )
+        edges = {}
+        for row in rows:
+            row = dict(row)
+            linked = row.pop('linked_intersection')
+            edge = edges.setdefault(row['walkway_id'], {**row, 'intersection_ids': []})
+            if linked is not None:
+                edge['intersection_ids'].append(linked)
+        return list(edges.values())
 
     def _next_id(self, table):
         # SQLite does not auto-increment SERIAL columns, so IDs are assigned here.

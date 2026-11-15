@@ -32,7 +32,8 @@ def seed(db):
                           walkway_name=f'{TEST_PREFIX}walkway',
                           boundary=TEST_POLYGON,
                           allow_riders=True,
-                          allow_vehicles=False)
+                          allow_vehicles=False,
+                          ada_accessible=True)
 
     intersection_id = seed_row('Intersection',
                                intersection_name=f'{TEST_PREFIX}intersection',
