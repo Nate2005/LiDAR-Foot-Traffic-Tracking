@@ -1,0 +1,43 @@
+3rd Party Sources for Website
+
+MapLibre GL JS
+- License: BSD 3-Clause
+- Website: https://maplibre.org
+- Source: https://github.com/maplibre/maplibre-gl-js
+- License Text: https://github.com/maplibre/maplibre-gl-js/blob/main/LICENSE.txt
+
+PMTiles
+- License: BSD 3-Clause
+- Website: https://github.com/protomaps/PMTiles
+
+OpenMapTiles Style
+- License: BSD 3-Clause
+- Website: https://github.com/openmaptiles/openmaptiles
+
+OpenMapTiles Fonts
+- License: Font-dependent
+- Website: https://github.com/openmaptiles/fonts
+- Provides the Open Sans font assets used by this project.
+
+Open Sans Font
+- License: Apache License 2.0
+- Website: https://github.com/openmaptiles/fonts
+- Used for map labels and generated glyph PBF files.
+
+fontnik
+- License: BSD 3-Clause
+- Website: https://github.com/mapbox/fontnik
+- Used to generate glyph PBF files.
+
+@mapbox/glyph-pbf-composite
+- License: BSD 2-Clause
+- Website: https://github.com/mapbox/glyph-pbf-composite
+- Used during glyph generation.
+
+Vue.js
+- License: MIT
+- Website: https://vuejs.org
+
+Vite
+- License: MIT
+- Website: https://vitejs.dev
