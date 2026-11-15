@@ -9,9 +9,9 @@ CREATE TABLE Building (
     outline GEOMETRY
 );
 
-CREATE TABLE WalkwaySegment (
-    walkway_name VARCHAR(255) PRIMARY KEY,
-    walkway_id SERIAL UNIQUE,
+CREATE TABLE PathwaySegment (
+    pathway_name VARCHAR(255) PRIMARY KEY,
+    pathway_id SERIAL UNIQUE,
     boundary GEOMETRY,
     allow_riders BOOLEAN,
     allow_vehicles BOOLEAN,
@@ -25,11 +25,11 @@ CREATE TABLE Intersection (
     boundary GEOMETRY
 );
 
-CREATE TABLE Walkway_Intersection (
-    walkway_id INTEGER NOT NULL,
+CREATE TABLE Pathway_Intersection (
+    pathway_id INTEGER NOT NULL,
     intersection_id INTEGER NOT NULL,
-    PRIMARY KEY (walkway_id, intersection_id),
-    FOREIGN KEY (walkway_id) REFERENCES WalkwaySegment(walkway_id) ON DELETE CASCADE,
+    PRIMARY KEY (pathway_id, intersection_id),
+    FOREIGN KEY (pathway_id) REFERENCES PathwaySegment(pathway_id) ON DELETE CASCADE,
     FOREIGN KEY (intersection_id) REFERENCES Intersection(intersection_id) ON DELETE CASCADE
 );
 
@@ -37,13 +37,13 @@ CREATE TABLE SensorNode (
     sensor_name VARCHAR(255) PRIMARY KEY,
     sensor_id SERIAL UNIQUE,
     status VARCHAR(50),
-    walkway_id INTEGER,
+    pathway_id INTEGER,
     intersection_id INTEGER,
-    FOREIGN KEY (walkway_id) REFERENCES WalkwaySegment(walkway_id) ON DELETE SET NULL,
+    FOREIGN KEY (pathway_id) REFERENCES PathwaySegment(pathway_id) ON DELETE SET NULL,
     FOREIGN KEY (intersection_id) REFERENCES Intersection(intersection_id) ON DELETE SET NULL,
     CONSTRAINT chk_sensor_location CHECK (
-        (walkway_id IS NOT NULL AND intersection_id IS NULL) OR 
-        (walkway_id IS NULL AND intersection_id IS NOT NULL)
+        (pathway_id IS NOT NULL AND intersection_id IS NULL) OR 
+        (pathway_id IS NULL AND intersection_id IS NOT NULL)
     )
 );
 

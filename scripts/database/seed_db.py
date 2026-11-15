@@ -28,8 +28,8 @@ def seed(db):
              name='TEST Building (fake seed data)',
              outline=TEST_POLYGON)
 
-    walkway_id = seed_row('WalkwaySegment',
-                          walkway_name=f'{TEST_PREFIX}walkway',
+    pathway_id = seed_row('PathwaySegment',
+                          pathway_name=f'{TEST_PREFIX}pathway',
                           boundary=TEST_POLYGON,
                           allow_riders=True,
                           allow_vehicles=False,
@@ -40,13 +40,13 @@ def seed(db):
                                name='TEST Intersection (fake seed data)',
                                boundary=TEST_POLYGON)
 
-    linked = db.link_walkway_intersection(walkway_id, intersection_id)
-    results.append(('Walkway_Intersection', 'test link', linked))
+    linked = db.link_pathway_intersection(pathway_id, intersection_id)
+    results.append(('Pathway_Intersection', 'test link', linked))
 
     sensor_id = seed_row('SensorNode',
                          sensor_name=f'{TEST_PREFIX}sensor',
                          status='TEST',
-                         walkway_id=walkway_id,
+                         pathway_id=pathway_id,
                          intersection_id=None)
 
     seed_row('SpatialGridScan',

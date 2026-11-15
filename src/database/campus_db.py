@@ -13,13 +13,13 @@ Table = namedtuple('Table', ['name_column', 'id_column', 'columns'])
 TABLES = {
     'Building': Table('building_name', 'building_id',
                       ('building_name', 'name', 'outline')),
-    'WalkwaySegment': Table('walkway_name', 'walkway_id',
-                            ('walkway_name', 'boundary', 'allow_riders', 'allow_vehicles',
+    'PathwaySegment': Table('pathway_name', 'pathway_id',
+                            ('pathway_name', 'boundary', 'allow_riders', 'allow_vehicles',
                              'ada_accessible')),
     'Intersection': Table('intersection_name', 'intersection_id',
                           ('intersection_name', 'name', 'boundary')),
     'SensorNode': Table('sensor_name', 'sensor_id',
-                        ('sensor_name', 'status', 'walkway_id', 'intersection_id')),
+                        ('sensor_name', 'status', 'pathway_id', 'intersection_id')),
     'SpatialGridScan': Table('scan_name', 'scan_id',
                              ('scan_name', 'sensor_id', 'timestamp', 'grid_data')),
     'TrafficEvent': Table('event_name', 'event_id',
@@ -225,70 +225,70 @@ class CampusDB:
             )
         return cursor.rowcount > 0
 
-    def link_walkway_intersection(self, walkway_id, intersection_id):
-        """Link a walkway to an intersection. Return True if newly linked.
+    def link_pathway_intersection(self, pathway_id, intersection_id):
+        """Link a pathway to an intersection. Return True if newly linked.
 
         Args:
-            walkway_id: ID of the walkway segment.
+            pathway_id: ID of the pathway segment.
             intersection_id: ID of the intersection.
         """
         with self.transaction():
             cursor = self.conn.execute(
-                "INSERT OR IGNORE INTO Walkway_Intersection (walkway_id, intersection_id) "
+                "INSERT OR IGNORE INTO Pathway_Intersection (pathway_id, intersection_id) "
                 "VALUES (?, ?)",
-                (walkway_id, intersection_id),
+                (pathway_id, intersection_id),
             )
         return cursor.rowcount > 0
 
-    def unlink_walkway_intersection(self, walkway_id, intersection_id):
-        """Remove a walkway-intersection link. Return True if one existed.
+    def unlink_pathway_intersection(self, pathway_id, intersection_id):
+        """Remove a pathway-intersection link. Return True if one existed.
 
         Args:
-            walkway_id: ID of the walkway segment.
+            pathway_id: ID of the pathway segment.
             intersection_id: ID of the intersection.
         """
         with self.transaction():
             cursor = self.conn.execute(
-                "DELETE FROM Walkway_Intersection "
-                "WHERE walkway_id = ? AND intersection_id = ?",
-                (walkway_id, intersection_id),
+                "DELETE FROM Pathway_Intersection "
+                "WHERE pathway_id = ? AND intersection_id = ?",
+                (pathway_id, intersection_id),
             )
         return cursor.rowcount > 0
 
-    def intersections_for_walkway(self, walkway_id):
-        """Return all intersections (as dicts) linked to a walkway.
+    def intersections_for_pathway(self, pathway_id):
+        """Return all intersections (as dicts) linked to a pathway.
 
         Args:
-            walkway_id: ID of the walkway segment.
+            pathway_id: ID of the pathway segment.
         """
         rows = self.conn.execute(
             "SELECT i.* FROM Intersection i "
-            "JOIN Walkway_Intersection wi ON wi.intersection_id = i.intersection_id "
-            "WHERE wi.walkway_id = ? ORDER BY i.intersection_id",
-            (walkway_id,),
+            "JOIN Pathway_Intersection wi ON wi.intersection_id = i.intersection_id "
+            "WHERE wi.pathway_id = ? ORDER BY i.intersection_id",
+            (pathway_id,),
         )
         return [dict(row) for row in rows]
 
-    def walkways_for_intersection(self, intersection_id):
-        """Return all walkway segments (as dicts) linked to an intersection.
+    def pathways_for_intersection(self, intersection_id):
+        """Return all pathway segments (as dicts) linked to an intersection.
 
         Args:
             intersection_id: ID of the intersection.
         """
         rows = self.conn.execute(
-            "SELECT w.* FROM WalkwaySegment w "
-            "JOIN Walkway_Intersection wi ON wi.walkway_id = w.walkway_id "
-            "WHERE wi.intersection_id = ? ORDER BY w.walkway_id",
+            "SELECT w.* FROM PathwaySegment w "
+            "JOIN Pathway_Intersection wi ON wi.pathway_id = w.pathway_id "
+            "WHERE wi.intersection_id = ? ORDER BY w.pathway_id",
             (intersection_id,),
         )
         return [dict(row) for row in rows]
 
-    def walkway_edges(self, ada_only=False):
-        """Return walkway segments with their linked intersection IDs, for building
-        the routing graph (intersections are nodes, walkways are edges).
+    def pathway_edges(self, ada_only=False):
+        """Return pathway segments with their linked intersection IDs, for building
+        the routing graph (intersections are nodes, pathways are edges).
 
-        Each dict is a WalkwaySegment row plus 'intersection_ids', a sorted list.
-        A walkway with no linked intersections has an empty list.
+        Each dict is a PathwaySegment row plus 'intersection_ids', a sorted list.
+        A pathway with no linked intersections has an empty list.
 
         Args:
             ada_only: If True, leave out segments that are not ADA accessible
@@ -296,15 +296,15 @@ class CampusDB:
         """
         where = "WHERE w.ada_accessible = 1" if ada_only else ""
         rows = self.conn.execute(
-            "SELECT w.*, wi.intersection_id AS linked_intersection FROM WalkwaySegment w "
-            "LEFT JOIN Walkway_Intersection wi ON wi.walkway_id = w.walkway_id "
-            f"{where} ORDER BY w.walkway_id, wi.intersection_id"
+            "SELECT w.*, wi.intersection_id AS linked_intersection FROM PathwaySegment w "
+            "LEFT JOIN Pathway_Intersection wi ON wi.pathway_id = w.pathway_id "
+            f"{where} ORDER BY w.pathway_id, wi.intersection_id"
         )
         edges = {}
         for row in rows:
             row = dict(row)
             linked = row.pop('linked_intersection')
-            edge = edges.setdefault(row['walkway_id'], {**row, 'intersection_ids': []})
+            edge = edges.setdefault(row['pathway_id'], {**row, 'intersection_ids': []})
             if linked is not None:
                 edge['intersection_ids'].append(linked)
         return list(edges.values())
