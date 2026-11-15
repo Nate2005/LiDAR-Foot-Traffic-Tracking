@@ -12,7 +12,7 @@ Table = namedtuple('Table', ['name_column', 'id_column', 'columns'])
 # Table and column names are interpolated into SQL, so only these are accepted
 TABLES = {
     'Building': Table('building_name', 'building_id',
-                      ('building_name', 'name', 'outline')),
+                      ('building_name', 'building_code', 'outline')),
     'PathwaySegment': Table('pathway_name', 'pathway_id',
                             ('pathway_name', 'boundary', 'allow_riders', 'allow_vehicles',
                              'ada_accessible')),
@@ -308,6 +308,31 @@ class CampusDB:
             if linked is not None:
                 edge['intersection_ids'].append(linked)
         return list(edges.values())
+
+    def search_buildings(self, text):
+        """Return buildings whose full name or building code contains `text`,
+        ignoring case, best matches first.
+
+        Ranking: exact code match, then name or code starting with `text`,
+        then any other match; ties are broken by building_id.
+
+        Args:
+            text: Search text, e.g. 'sem' or 'davidson'. Taken literally, so
+                '%' and '_' are not wildcards.
+        """
+        escaped = text.replace('\\', '\\\\').replace('%', '\\%').replace('_', '\\_')
+        contains, prefix = f"%{escaped}%", f"{escaped}%"
+        rows = self.conn.execute(
+            "SELECT * FROM Building "
+            "WHERE building_name LIKE :contains ESCAPE '\\' "
+            "   OR building_code LIKE :contains ESCAPE '\\' "
+            "ORDER BY building_code = :text COLLATE NOCASE DESC, "
+            "         (building_name LIKE :prefix ESCAPE '\\' "
+            "          OR building_code LIKE :prefix ESCAPE '\\') DESC, "
+            "         building_id",
+            {'text': text, 'contains': contains, 'prefix': prefix},
+        )
+        return [dict(row) for row in rows]
 
     def _next_id(self, table):
         # SQLite does not auto-increment SERIAL columns, so IDs are assigned here.

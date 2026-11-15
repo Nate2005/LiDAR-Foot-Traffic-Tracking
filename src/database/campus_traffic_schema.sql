@@ -1,11 +1,17 @@
 -- Schema Definition for LiDAR Foot Traffic Monitoring
 -- This Schema is not to be used in the actual system, it is simply the source of 
 -- truth for the database design and will be used to generate the actual database schema.
+--
+-- GEOMETRY columns store a GeoJSON geometry object as text
+--
+-- Naming convention:   `<table>_name` primary human chosen key (e.g. 'Scrugham Engineering and Mines') 
+--                      `<table>_id` used for foreign keys and API URLs
+--                      `building_code` is the short code (e.g. 'SEM')
 
 CREATE TABLE Building (
     building_name VARCHAR(255) PRIMARY KEY,
     building_id SERIAL UNIQUE,
-    name VARCHAR(255) NOT NULL,
+    building_code VARCHAR(255) NOT NULL UNIQUE,
     outline GEOMETRY
 );
 

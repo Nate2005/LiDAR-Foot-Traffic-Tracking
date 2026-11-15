@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import json
 import os
 import sqlite3
 import sys
@@ -12,7 +13,10 @@ from database import CampusDB, DEFAULT_DB_PATH
 TEST_PREFIX = 'TEST_'
 TEST_TIME = '2000-01-01 00:00:00'
 TEST_END_TIME = '2000-01-01 00:05:00'
-TEST_POLYGON = 'POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))'
+TEST_POLYGON = json.dumps({
+    'type': 'Polygon',
+    'coordinates': [[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]],
+})
 
 
 def seed(db):
@@ -25,7 +29,7 @@ def seed(db):
 
     seed_row('Building',
              building_name=f'{TEST_PREFIX}building',
-             name='TEST Building (fake seed data)',
+             building_code=f'{TEST_PREFIX}BLDG',
              outline=TEST_POLYGON)
 
     pathway_id = seed_row('PathwaySegment',
