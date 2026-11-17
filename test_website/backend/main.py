@@ -22,3 +22,8 @@ def readings(db: sqlite3.Connection = Depends(getdb)):
         "SELECT id, sensor, value, time FROM readings ORDER BY id DESC"
 	).fetchall()
     return [dict(r) for r in rows]
+
+# Endpoint for monitoring script to reach out too
+@app.get('/health')
+def health():
+    return {'ok': True}

@@ -3,10 +3,10 @@
 #include <HTTPClient.h>
 
 // WiFi and API details
-const char* WIFI_NAME = "";
-const char* WIFI_PASSWORD = "";
+const char* WIFI_NAME = "Nathan";
+const char* WIFI_PASSWORD = "0mfa34v7dwfd";
 const char* API_URL = "https://unrwalkingmap.com/data/";
-const char* API_KEY = "";
+const char* API_KEY = "94a761cb0f327c0cb87500a8c9c77e6d065d6fdda7b84b5af32a8cbe29e3c8a4";
 const char* SENSOR = "test";
 
 const unsigned long SEND_INTERVAL_MS = 10000;
@@ -23,11 +23,12 @@ void connectWIFI() {
     delay(1000);
     Serial.println("Connecting...");
 
-    // If no connection after 20 seconds, print status and try again.
-    if (millis() - start > 20000) {
+    // If no connection after 25 seconds, print status and try again.
+    if (millis() - start > 25000) {
       Serial.printf("\nFailed, status=%d, retrying\n", WiFi.status());
       WiFi.disconnect(true);
       delay(500);
+      WiFi.mode(WIFI_STA);
       WiFi.begin(WIFI_NAME, WIFI_PASSWORD);
       start = millis();
     }
@@ -35,6 +36,12 @@ void connectWIFI() {
 
   Serial.print("\nConnected, IP: ");
   Serial.println(WiFi.localIP());
+}
+
+void onWifiEvent(WiFiEvent_t event, WiFiEventInfo_t info) {
+  if (event == ARDUINO_EVENT_WIFI_STA_DISCONNECTED) {
+    Serial.printf("Disconnected, reason=%d\n", info.wifi_sta_disconnected.reason);
+  }
 }
 
 // Placeholder function. Generates random number for testing.
@@ -58,7 +65,7 @@ bool postReading(const char* sensor, float value) {
   http.addHeader("Api-Key", API_KEY);
 
   // Creates json formatted row for the API endpoint.
-  char body[100];
+  char body[96];
   snprintf(body, sizeof(body), "{\"sensor\":\"%s\",\"value\":%.2f}", sensor, value);
 
   int code = http.POST(body);
@@ -67,12 +74,17 @@ bool postReading(const char* sensor, float value) {
     Serial.println(HTTPClient::errorToString(code));
   }
 
+  if (code != 201) {
+    Serial.println(http.getString().substring(0, 100));
+  }
+
   http.end();
   return code == 201;
 }
 
 void setup() {
   Serial.begin(9600);
+  WiFi.onEvent(onWifiEvent);
   WiFi.persistent(false);
   WiFi.disconnect(true, true);
   delay(500);
