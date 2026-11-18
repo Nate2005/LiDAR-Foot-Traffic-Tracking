@@ -3,9 +3,9 @@
 nginx forwards /api/* to this app with the /api prefix stripped, so the
 frontend calls e.g. `fetch("/api/buildings")` and this app sees /buildings.
 
-Run locally (from the repo root):
+Run (from the repo root; sets up .venv and the database first, see README):
 
-    uvicorn api.main:app --app-dir src --reload
+    scripts/run_backend.sh
 """
 import json
 import os
