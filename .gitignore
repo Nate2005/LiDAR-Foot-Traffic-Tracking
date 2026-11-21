@@ -219,6 +219,8 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
+# SQL
+*.db
 
 # Vue / Vite
 unrwalkingmapWebsite/node_modules/

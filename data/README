@@ -1,0 +1,5 @@
+# Data Directory
+
+This directory is the storage location for the active SQLite database (campus_traffic.db) used by the LiDAR foot traffic tracking backend.
+
+scripts/run_backend.sh creates it automatically if it is missing. To add labeled test rows, run scripts/database/seed_db.py afterwards.
