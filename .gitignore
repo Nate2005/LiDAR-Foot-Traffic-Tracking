@@ -221,3 +221,20 @@ __marimo__/
 
 # SQL
 *.db
+
+# Vue / Vite
+unrwalkingmapWebsite/node_modules/
+unrwalkingmapWebsite/dist/
+unrwalkingmapWebsite/public/*
+!unrwalkingmapWebsite/public/.gitkeep
+
+# VS Code
+.vscode/
+
+# Environment files
+.env
+.env.*
+
+#out Dir
+Out/*
+!Out/.gitkeep
