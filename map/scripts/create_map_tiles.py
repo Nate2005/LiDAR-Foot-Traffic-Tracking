@@ -4,10 +4,11 @@ from pathlib import Path
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent
-PROJECT_DIR = SCRIPT_DIR.parent
+MAP_DIR = SCRIPT_DIR.parent
+REPO_ROOT = MAP_DIR.parent
 
-CONFIG_DIR = PROJECT_DIR / "Configs"
-OUT_DIR = PROJECT_DIR / "Out"
+CONFIG_DIR = MAP_DIR / "config"
+OUT_DIR = MAP_DIR / "out"
 
 OUT_DIR.mkdir(exist_ok=True)
 
@@ -49,13 +50,12 @@ def CheckPackages():
     if not CheckPMTiles():
         missing.append("pmtiles")
 
-    CONFIG_DIR = Path("../Configs")
     
     if not (CONFIG_DIR / "config-unr.json").exists():
-     missing.append("Configs/config-unr.json")
+     missing.append("map/config/config-unr.json")
     
     if not (CONFIG_DIR / "process.lua").exists():
-     missing.append("Configs/process.lua")
+     missing.append("map/config/process.lua")
 
     if not missing:
         return True
@@ -150,8 +150,8 @@ def MovePMTilesToSitePublicDir(pmtiles_file):
     """ Move the pmtiles to the public dir folder of the site"""
 
     destination = (
-        PROJECT_DIR /
-        "unrwalkingmapWebsite" /
+        REPO_ROOT /
+        "frontend" /
         "public" /
         "unr.pmtiles"
     )

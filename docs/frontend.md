@@ -3,10 +3,12 @@
 
 ## Repository Layout
 
-- unrwalkingmapWebsite/
-    - Configs/
-    - Scripts/
-    - Out/ 
+- frontend/                    Vue + Vite site
+- map/
+    - config/                    tilemaker config
+    - scripts/create_map_tiles.py
+    - out/                       generated tiles
+- deploy/scripts/                build_frontend.py, deploy_frontend.py
 
 ## Software Requirements
 
@@ -37,7 +39,7 @@ All website dependencies are defined in:
 
 Install them with:
 ```text
-cd unrwalkingmapWebsite
+cd frontend
 npm install
 ```
 
@@ -55,7 +57,7 @@ Required runtime assets, including:
 must be generated or downloaded separately and placed in:
 
 ```text 
-unrwalkingmapWebsite/public/
+frontend/public/
 ```
 
 before building the website.
@@ -68,20 +70,20 @@ The map-generation scripts require a Nevada OpenStreetMap extract from Geofabrik
 
 https://download.geofabrik.de/north-america/us/nevada.html
 
-Download the Nevada .osm.pbf file and place it inside the project's Out directory.
+Download the Nevada .osm.pbf file and place it inside the map/out/ directory.
 
 The scripts expect a file matching:
 
 - nevada-*.osm.pbf
 
-Put into Out folder
+Put into map/out/
 
 ### Font Assets
 
 The website requires glyph assets in:
 
 ```text
-unrwalkingmapWebsite/public/fonts/
+frontend/public/fonts/
 ```
 
 These assets are based on the OpenMapTiles Open Font Glyphs project:
@@ -105,7 +107,7 @@ public/fonts/_output/
 If the glyphs are not already present, generate them with:
 
 ```text
-cd unrwalkingmapWebsite/public/fonts
+cd frontend/public/fonts
 npm install
 node generate.js
 ```
@@ -132,7 +134,7 @@ https://github.com/maplibre/maplibre-gl-js
 and place it in:
 
 ```text
-unrwalkingmapWebsite/public/
+frontend/public/
 ```
 
 Ensure that .mjs files are served with the MIME type:
@@ -145,14 +147,14 @@ application/javascript
 Run:
 
 ```text
-python3 Scripts/CreateMapTiles.py
+python3 map/scripts/create_map_tiles.py
 ```
 
 This generates:
 ```text
-Out/unr.osm.pbf
-Out/unr.mbtiles
-Out/unr.pmtiles
+map/out/unr.osm.pbf
+map/out/unr.mbtiles
+map/out/unr.pmtiles
 ```
 
 and copies:
@@ -163,25 +165,25 @@ unr.pmtiles
 
 to:
 ```text
-unrwalkingmapWebsite/public/
+frontend/public/
 ```
 ## Build Site
 
 Run:
 ```text
-cd unrwalkingmapWebsite
+cd frontend
 npm install
 npm run build
 ```
 
 This creates:
 ```text
-unrwalkingmapWebsite/dist
+frontend/dist
 ```
 
 
 ## Deploy Site
-DeployWebsite.py requires sudo to:
+deploy_frontend.py requires sudo to:
 
 - Write to /var/www/html
 - Reload the nginx service
@@ -189,10 +191,10 @@ DeployWebsite.py requires sudo to:
 
 Run:
 ```text
-sudo python3 Scripts/DeployWebsite.py
+sudo python3 deploy/scripts/deploy_frontend.py
 ```
 
 This:
-- Copies the contents of unrwalkingmapWebsite/dist
+- Copies the contents of frontend/dist
 - Deploys the site to /var/www/html
 - Reloads Nginx
