@@ -1,0 +1,21 @@
+[project]
+name = "lidar-foot-traffic-backend"
+version = "0.1.0"
+requires-python = ">=3.12"
+
+[dependency-groups]
+# Install with: pip install --group app   (pip >= 25.1)
+app = [
+    "fastapi==0.162.2",
+    "pydantic==2.14.3",
+    "uvicorn==0.54.0",
+]
+dev = [
+    { include-group = "app" },
+    "pytest==9.2.0",
+    "httpx2==2.16.0",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

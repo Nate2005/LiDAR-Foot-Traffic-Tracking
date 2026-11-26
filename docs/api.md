@@ -1,6 +1,6 @@
 # Backend API
 
-FastAPI app in `src/api/main.py`. See the [main README](../README.md#backend) for how to run it. Interactive docs are at <http://127.0.0.1:8000/docs> when it is running.
+FastAPI app in `backend/src/api/main.py`. See the [main README](../README.md#backend) for how to run it. Interactive docs are at <http://127.0.0.1:8000/docs> when it is running.
 
 ## Buildings
 

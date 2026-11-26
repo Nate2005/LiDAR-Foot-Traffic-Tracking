@@ -134,17 +134,17 @@ __marimo__/
 *.db
 
 # Vue / Vite
-unrwalkingmapWebsite/node_modules/
-unrwalkingmapWebsite/dist/
-unrwalkingmapWebsite/public/*
-!unrwalkingmapWebsite/public/.gitkeep
+frontend/node_modules/
+frontend/dist/
+frontend/public/*
+!frontend/public/.gitkeep
 
 # VS Code
 .vscode/
 
 #out Dir
-Out/*
-!Out/.gitkeep
+map/out/*
+!map/out/.gitkeep
 
 # SQL
 *.db
