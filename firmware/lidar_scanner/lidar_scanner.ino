@@ -3,7 +3,7 @@
 #include <HTTPClient.h>
 #include <ESP32Servo.h>
 
-const int BOOT_PIN = 0;
+const int BUTTON_PIN = 0;
 
 // WiFi and API details
 const char* WIFI_NAME = "";
@@ -15,13 +15,6 @@ const char* SENSOR = "test";
 const unsigned long SEND_INTERVAL_MS = 10000;
 unsigned long lastSend = 0;
 
-// TF-Luna details
-const int LIDAR_RX_PIN = 16;
-const int LIDAR_TX_PIN = 17;
-const int LIDAR_READ_INTERVAL_MS = 100;
-
-HardwareSerial lidar(2);
-
 // Servo details
 const int SERVO_PIN = 18;
 const int MIN_ANGLE = 45;
@@ -29,6 +22,22 @@ const int MAX_ANGLE = 135;
 const int STEP_DELAY_MS = 15;
 
 Servo servo;
+
+// LiDAR details
+struct ScanPoint {
+  uint8_t angle;
+  uint16_t distanceCm;
+  uint16_t strength;
+  bool valid;
+};
+const int NUM_POINTS = MAX_ANGLE - MIN_ANGLE + 1;
+ScanPoint scan[NUM_POINTS];
+
+const int LIDAR_RX_PIN = 16;
+const int LIDAR_TX_PIN = 17;
+const int LIDAR_READ_INTERVAL_MS = 100;
+
+HardwareSerial lidar(2);
 
 void connectWIFI() {
   delay(500);
@@ -117,21 +126,44 @@ bool readLidar() {
   return gotFrame;
 }
 
-void runLidar() {
-  for (int angle = MIN_ANGLE; angle <= MAX_ANGLE; angle++) {
-    servo.write(angle);
-    readLidar();
-    delay(STEP_DELAY_MS);
+bool readFreshLidar(unsigned long timeoutMs) {
+  while (lidar.available()) lidar.read();
+
+  unsigned long start = millis();
+  while (millis() - start < timeoutMs) {
+    if (readLidar()) return true;
+    delay(1);
   }
-  for (int angle = MAX_ANGLE; angle >= MIN_ANGLE; angle--) {
+  return false;
+}
+
+void runScan() {
+  servo.write(MIN_ANGLE);
+  delay(200);
+
+  for (int i = 0; i < NUM_POINTS; i++) {
+    int angle = MIN_ANGLE + i;
     servo.write(angle);
-    readLidar();
     delay(STEP_DELAY_MS);
+    bool ok = readFreshLidar(50);
+
+    scan[i].angle = angle;
+    scan[i].distanceCm = ok ? distanceCm : 0;
+    scan[i].strength = ok ? strength : 0;
+    scan[i].valid = ok;
+  }
+
+  servo.write(90);
+
+  // Dump results
+  Serial.println("angle,distance_cm,strength,valid");
+  for (int i = 0; i < NUM_POINTS; i++) {
+    Serial.printf("%u,%u,%u,%d\n", scan[i].angle, scan[i].distanceCm, scan[i].strength, scan[i].valid);
   }
 }
 
 void setup() {
-  pinMode(BOOT_PIN, INPUT_PULLUP);
+  pinMode(BUTTON_PIN, INPUT_PULLUP);
 
   Serial.begin(115200);
   lidar.begin(115200, SERIAL_8N1, LIDAR_RX_PIN, LIDAR_TX_PIN);
@@ -149,20 +181,12 @@ void setup() {
   // connectWIFI();
 }
 
-unsigned long lastPrint = 0;
-
 void loop() {
-  if (!digitalRead(BOOT_PIN)) {
-    // Run lidar
-  }
-  delay(500);
-
-  if (millis() - lastPrint >= LIDAR_READ_INTERVAL_MS) {
-    lastPrint = millis();
-    if (readLidar()) {
-      Serial.printf("Distance: %4u cm Strength: %5u\n", distanceCm, strength);
-    } else {
-      Serial.println("No data from sensor");
+  if (digitalRead(BUTTON_PIN) == LOW) {
+    delay(30);
+    if (digitalRead(BUTTON_PIN) == LOW) {
+      runScan();
+      while (digitalRead(BUTTON_PIN) == LOW) delay(10);
     }
   }
 
