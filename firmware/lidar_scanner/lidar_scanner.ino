@@ -3,6 +3,8 @@
 #include <HTTPClient.h>
 #include <ESP32Servo.h>
 
+const int BOOT_PIN = 0;
+
 // WiFi and API details
 const char* WIFI_NAME = "";
 const char* WIFI_PASSWORD = "";
@@ -16,13 +18,14 @@ unsigned long lastSend = 0;
 // TF-Luna details
 const int LIDAR_RX_PIN = 16;
 const int LIDAR_TX_PIN = 17;
+const int LIDAR_READ_INTERVAL_MS = 100;
 
 HardwareSerial lidar(2);
 
 // Servo details
 const int SERVO_PIN = 18;
-const int MIN_ANGLE = 0;
-const int MAX_ANGLE = 180;
+const int MIN_ANGLE = 45;
+const int MAX_ANGLE = 135;
 const int STEP_DELAY_MS = 15;
 
 Servo servo;
@@ -114,25 +117,30 @@ bool readLidar() {
   return gotFrame;
 }
 
-void moveServo() {
+void runLidar() {
   for (int angle = MIN_ANGLE; angle <= MAX_ANGLE; angle++) {
     servo.write(angle);
+    readLidar();
     delay(STEP_DELAY_MS);
   }
   for (int angle = MAX_ANGLE; angle >= MIN_ANGLE; angle--) {
     servo.write(angle);
+    readLidar();
     delay(STEP_DELAY_MS);
   }
 }
 
 void setup() {
+  pinMode(BOOT_PIN, INPUT_PULLUP);
+
   Serial.begin(115200);
-  // lidar.begin(115200, SERIAL_8N1, LIDAR_RX_PIN, LIDAR_TX_PIN);
+  lidar.begin(115200, SERIAL_8N1, LIDAR_RX_PIN, LIDAR_TX_PIN);
+  delay(500);
 
   servo.setPeriodHertz(50);
   servo.attach(SERVO_PIN, 500, 2400);
   servo.write(90);
-  delay(1000);
+  delay(500);
 
   // WiFi.onEvent(onWifiEvent); // Use if not connecting to WiFi
   // WiFi.persistent(false);
@@ -144,16 +152,19 @@ void setup() {
 unsigned long lastPrint = 0;
 
 void loop() {
-  moveServo();
+  if (!digitalRead(BOOT_PIN)) {
+    // Run lidar
+  }
+  delay(500);
 
-  // if (millis() - lastPrint >= 1000) {
-  //   lastPrint = millis();
-  //   if (readLidar()) {
-  //     Serial.printf("Distance: %4u cm Strength: %5u\n", distanceCm, strength);
-  //   } else {
-  //     Serial.println("No data from sensor");
-  //   }
-  // }
+  if (millis() - lastPrint >= LIDAR_READ_INTERVAL_MS) {
+    lastPrint = millis();
+    if (readLidar()) {
+      Serial.printf("Distance: %4u cm Strength: %5u\n", distanceCm, strength);
+    } else {
+      Serial.println("No data from sensor");
+    }
+  }
 
   // if (WiFi.status() != WL_CONNECTED) connectWIFI();
 
